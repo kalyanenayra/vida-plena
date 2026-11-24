@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#ffffff">
+<title>Vida Plena - Assistente Diário</title>
+<meta name="description" content="Aplicativo web de apoio à rotina e ao controle de medicamentos de pessoas idosas.">
+<link rel="icon" href="assets/icone.png">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h5v-6h4v6h5V10"/></symbol>
+<symbol id="i-pill" viewBox="0 0 24 24"><g transform="rotate(-45 12 12)"><rect x="2" y="8" width="20" height="8" rx="4"/><path d="M12 8v8"/></g></symbol>
+<symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+<symbol id="i-pulse" viewBox="0 0 24 24"><path d="M3 12h4l2-6 4 12 2-6h6"/></symbol>
+<symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></symbol>
+<symbol id="i-phone" viewBox="0 0 24 24"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 6 6L16 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></symbol>
+<symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/></symbol>
+<symbol id="i-bulb" viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3z"/></symbol>
+</defs></svg>
+<div id="modal" class="modal" hidden role="dialog" aria-modal="true"><div class="caixa"><p id="modal-txt"></p><div id="modal-acoes"></div></div></div>
+<div class="app">
+<header id="topo-app"><img src="assets/logo.png" alt="Vida Plena"><h1 id="titulo-aba" tabindex="-1"></h1></header>
+
+<section id="login" class="vista login ativa">
+  <div class="hero"><img src="assets/logo.png" alt="Vida Plena"></div>
+  <div class="painel">
+    <h2>Login</h2><p class="sub">Faça login para continuar</p>
+    <form id="form-login" novalidate>
+      <label for="login-id">Telefone ou e-mail</label>
+      <input id="login-id" inputmode="email" autocomplete="username" placeholder="nome@email.com">
+      <label for="login-senha">Senha</label>
+      <input id="login-senha" type="password" autocomplete="current-password" placeholder="••••••">
+      <p class="erro" id="login-erro" role="alert"></p>
+      <button class="btn">Entrar</button>
+    </form>
+    <button type="button" class="link" id="btn-esqueci">Esqueci minha senha?</button>
+    <button type="button" class="link" id="btn-facial">Entrar com reconhecimento facial</button>
+    <button type="button" class="link" data-ir="cadastro"><strong>Não tem conta? Cadastre-se</strong></button>
+  </div>
+</section>
+
+<section id="cadastro" class="vista cad">
+  <div class="hero curto"><img src="assets/logo.png" alt="Vida Plena"></div>
+  <div class="painel">
+    <h2>Criar conta</h2><p class="sub">Preencha para se cadastrar</p>
+    <form id="form-cadastro" novalidate>
+      <label for="cad-nome">Nome completo</label><input id="cad-nome" maxlength="60" autocomplete="name">
+      <label for="cad-id">Telefone ou e-mail</label><input id="cad-id" inputmode="email" autocomplete="username">
+      <label for="cad-senha">Senha</label><input id="cad-senha" type="password" autocomplete="new-password" placeholder="Mínimo 6 caracteres">
+      <label for="cad-senha2">Repita a senha</label><input id="cad-senha2" type="password" autocomplete="new-password">
+      <p class="erro" id="cad-erro" role="alert"></p>
+      <button class="btn">Criar conta</button>
+    </form>
+    <button type="button" class="link" data-ir="login">Já tenho conta. Entrar</button>
+  </div>
+</section>
+
+<section id="ab-inicio" class="vista"><div class="pag">
+  <p class="sub sem-margem" id="data-hoje"></p>
+  <h2 id="saudacao" class="saudacao">Olá!</h2>
+  <div class="card dest" id="prox-remedio"></div>
+  <div class="grade">
+    <div class="card"><b id="res-tomados">0/0</b><span>remédios tomados hoje</span></div>
+    <div class="card"><b id="res-consulta">-</b><span id="res-consulta-txt">próxima consulta</span></div>
+  </div>
+  <button class="btn perigo" id="btn-emergencia"><svg class="ic" aria-hidden="true"><use href="#i-phone"/></svg> Emergência: ligar para meu contato</button>
+  <div class="card"><strong class="tit"><svg class="ic" aria-hidden="true"><use href="#i-bulb"/></svg> Dica do dia</strong><p id="dica" class="dica"></p></div>
+</div></section>
+
+<section id="ab-remedios" class="vista"><div class="pag">
+  <form id="form-remedio" class="card">
+    <label for="rem-nome">Nome do remédio</label><input id="rem-nome" maxlength="60" placeholder="Ex: Losartana" required>
+    <label for="rem-dose">Dose (opcional)</label><input id="rem-dose" maxlength="30" placeholder="Ex: 1 comprimido">
+    <label for="rem-hora">Horário</label><input id="rem-hora" type="time" required>
+    <button class="btn">Adicionar remédio</button>
+  </form>
+  <h3>Lista de hoje</h3><div id="lista-remedios" aria-live="polite"></div>
+</div></section>
+
+<section id="ab-consultas" class="vista"><div class="pag">
+  <form id="form-consulta" class="card">
+    <label for="con-nome">Médico ou especialidade</label><input id="con-nome" maxlength="60" placeholder="Ex: Cardiologista" required>
+    <label for="con-data">Data</label><input id="con-data" type="date" required>
+    <label for="con-hora">Horário</label><input id="con-hora" type="time" required>
+    <label for="con-local">Local (opcional)</label><input id="con-local" maxlength="60" placeholder="Ex: UBS Centro">
+    <button class="btn">Agendar consulta</button>
+  </form>
+  <h3>Minhas consultas</h3><div id="lista-consultas" aria-live="polite"></div>
+</div></section>
+
+<section id="ab-saude" class="vista"><div class="pag">
+  <form id="form-registro" class="card">
+    <label for="reg-tipo">O que você mediu?</label>
+    <select id="reg-tipo"><option>Pressão arterial</option><option>Glicemia</option><option>Peso</option><option>Batimentos</option></select>
+    <label for="reg-valor">Valor <span id="reg-un"></span></label><input id="reg-valor" maxlength="12" required>
+    <button class="btn">Salvar medição</button>
+  </form>
+  <h3>Histórico</h3><div id="lista-registros" aria-live="polite"></div>
+</div></section>
+
+<section id="ab-perfil" class="vista"><div class="pag">
+  <form id="form-perfil" class="card">
+    <label for="p-nome">Nome</label><input id="p-nome" maxlength="60" required>
+    <label for="p-idade">Idade</label><input id="p-idade" type="number" inputmode="numeric" min="0" max="120">
+    <label for="p-tel">Telefone</label><input id="p-tel" type="tel" maxlength="20">
+    <label for="p-sangue">Tipo sanguíneo</label><input id="p-sangue" maxlength="3" placeholder="Ex: O+">
+    <label for="p-cnome">Contato de emergência</label><input id="p-cnome" maxlength="60" placeholder="Ex: Ana, filha">
+    <label for="p-ctel">Telefone do contato</label><input id="p-ctel" type="tel" maxlength="20">
+    <button class="btn">Salvar dados</button>
+  </form>
+  <button class="btn sec" id="btn-sair">Sair da conta</button>
+</div></section>
+
+<nav aria-label="Menu principal">
+  <button data-ir="ab-inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg>Início</button>
+  <button data-ir="ab-remedios"><svg class="ic" aria-hidden="true"><use href="#i-pill"/></svg>Remédios</button>
+  <button data-ir="ab-consultas"><svg class="ic" aria-hidden="true"><use href="#i-cal"/></svg>Consultas</button>
+  <button data-ir="ab-saude"><svg class="ic" aria-hidden="true"><use href="#i-pulse"/></svg>Saúde</button>
+  <button data-ir="ab-perfil"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg>Perfil</button>
+</nav>
+</div>
+<div id="toast" role="status" aria-live="polite"></div>
+<script src="script.js"></script>
+</body>
+</html>
